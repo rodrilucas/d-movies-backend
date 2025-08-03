@@ -11,8 +11,8 @@ export type SortOrder = 'asc' | 'desc'
 export type GetAllParams = {
   page: number
   limit: number
-  sortBy: SortBy
-  sortOrder: SortOrder
+  sortBy?: SortBy
+  sortOrder?: SortOrder
 }
 
 export class MoviseService {
