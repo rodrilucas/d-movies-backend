@@ -1,6 +1,6 @@
 import { Movie } from '@/@types'
 import { Count, MoviesRepository } from '../contracts/movies-repository'
-import { GetAllParams } from '@/services/movies-service'
+import { GetAllParams, GetByIdParam } from '@/services/movies-service'
 import { db } from '@/lib/knex'
 
 export class KnexMoviesRepository implements MoviesRepository {
@@ -22,5 +22,10 @@ export class KnexMoviesRepository implements MoviesRepository {
 
   async countAll(): Promise<Count[]> {
     return await db('movies').count()
+  }
+
+  async findById({ id }: GetByIdParam): Promise<Movie | null> {
+    const movie = await db('movies').where('id', id).first()
+    return movie ?? null
   }
 }
