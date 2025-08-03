@@ -6,6 +6,6 @@ export const config: Knex.Config = {
   connection: env.DATABASE_URL,
   migrations: {
     extension: 'ts',
-    directory: '.src/db/migrations',
+    directory: './src/db/migrations',
   },
 }
