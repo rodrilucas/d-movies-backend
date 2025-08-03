@@ -1,7 +1,7 @@
 import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
-  return knex.schema
+  return await knex.schema
     .createTableIfNotExists('movies', (table) => {
       table.integer('id').primary()
       table.string('title')
@@ -32,7 +32,7 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema
+  return await knex.schema
     .dropTableIfExists('movies')
     .dropTableIfExists('movies_page')
 }
