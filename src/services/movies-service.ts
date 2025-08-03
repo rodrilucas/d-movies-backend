@@ -15,6 +15,10 @@ export type GetAllParams = {
   sortOrder?: SortOrder
 }
 
+export type GetByIdParam = {
+  id: string
+}
+
 export class MoviseService {
   constructor(private readonly moviesRepository: MoviesRepository) {}
 
@@ -34,5 +38,10 @@ export class MoviseService {
       totalMovies: movies?.length,
       movies,
     }
+  }
+
+  getById = async ({ id }: GetByIdParam) => {
+    const movie = this.moviesRepository.findById({ id })
+    return movie
   }
 }
