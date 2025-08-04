@@ -54,7 +54,7 @@ export class TmdbService {
     )
 
     if (moviesFromAPI.results.length === 0) {
-      return new ResourceNotFoundError(
+      throw new ResourceNotFoundError(
         'Não foram encontrados filmes na API do TMDB',
       )
     }
@@ -62,8 +62,6 @@ export class TmdbService {
     await moviesService.saveAll({ movies: moviesFromAPI.results })
 
     const movieIds = moviesFromAPI.results.map((movie: Movie) => movie.id)
-    const totalPages: number = moviesFromAPI.total_pages || 1
-    const totalResults: number = moviesFromAPI.total_results || 0
 
     const moviesPageService = makeMoviesPageService()
 
@@ -71,15 +69,10 @@ export class TmdbService {
       page,
       query,
       movieIds,
-      totalPages,
-      totalResults,
+      totalPages: moviesFromAPI.total_pages,
+      totalResults: moviesFromAPI.totalResults,
     })
 
-    return {
-      totalPages,
-      totalResults,
-      limit,
-      movies: moviesFromAPI.results,
-    }
+    return moviesFromAPI
   }
 }

@@ -1,5 +1,6 @@
 import { Movie } from '@/@types'
 import { MoviesRepository } from '@/repositories/contracts/movies-repository'
+import { ResourceNotFoundError } from '@/web/errors/resource-not-found-error'
 
 export type SaveParam = {
   movie: Movie
@@ -75,18 +76,14 @@ export class MoviesService {
       sortOrder,
     })
 
-    const [{ count }] = await this.moviesRepository.countAll()
-
-    return {
-      currentPage: page,
-      totalPages: Math.ceil(count / limit),
-      totalMovies: movies?.length,
-      movies,
-    }
+    return movies
   }
 
   getById = async ({ id }: GetByIdParam) => {
-    const movie = this.moviesRepository.findById({ id })
+    const movie = await this.moviesRepository.findById({ id })
+    if (!movie) {
+      throw new ResourceNotFoundError('Filme não encontrado')
+    }
     return movie
   }
 
@@ -98,6 +95,11 @@ export class MoviesService {
       sortBy,
       sortOrder,
     })
+    if (!movies) {
+      throw new ResourceNotFoundError(
+        'Não foram encontrados filmes através dos ids',
+      )
+    }
     return movies
   }
 
@@ -106,7 +108,6 @@ export class MoviesService {
   }
 
   saveAll = async ({ movies }: SaveAllParam) => {
-    console.log(movies)
     const sanitizedMovies = movies.map((movie) => ({
       ...movie,
       release_date: movie.release_date?.trim() || null,
@@ -115,12 +116,13 @@ export class MoviesService {
     await this.moviesRepository.saveMany({ movies: sanitizedMovies })
   }
 
+  countAll = async () => {
+    return await this.moviesRepository.countMany()
+  }
+
   async getByFilters({ filters }: GetByFiltersParam) {
     const movies = await this.moviesRepository.findAdvance({ filters })
-    const totalMovies = movies && movies.length
-    const [{ count }] = await this.moviesRepository.countAll()
-    const totalPages = Math.ceil(count / filters.limit)
-    return { page: filters.page, totalPages, totalMovies, movies }
+    return movies
   }
 
   async getByKeyword({ keyword, limit }: GetByKeywordParams) {
