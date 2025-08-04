@@ -7,6 +7,7 @@ import { searchDto } from '../dto/search-dto'
 import { MoviesPageService } from '@/services/movies-page-service'
 import { makeTmdbService } from '@/services/factories/make-tmdb-service'
 import { getByFiltersDto } from '../dto/get-by-filters-dto'
+import { getByKeywordDto } from '../dto/get-by-keyword.dto'
 
 export class MoviesController {
   constructor(
@@ -92,6 +93,19 @@ export class MoviesController {
       page,
       totalMovies,
       totalPages,
+      movies,
+    })
+  }
+
+  getByKeyword = async (req: FastifyRequest, reply: FastifyReply) => {
+    const { keyword, limit } = getByKeywordDto.parse(req.query)
+
+    const movies = await this.moviesService.getByKeyword({
+      keyword,
+      limit,
+    })
+
+    reply.status(200).send({
       movies,
     })
   }
