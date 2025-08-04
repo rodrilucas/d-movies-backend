@@ -7,7 +7,8 @@ import {
   SaveParam,
   GetByIdsParams,
   SortBy,
-  GetByFiltersParams,
+  GetByFiltersParam,
+  GetByKeywordParams,
 } from '@/services/movies-service'
 import { db } from '@/lib/knex'
 
@@ -67,7 +68,17 @@ export class KnexMoviesRepository implements MoviesRepository {
     return await query
   }
 
-  async findAdvance({ filters }: GetByFiltersParams): Promise<Movie[] | []> {
+  async findByKeyword({
+    keyword,
+    limit,
+  }: GetByKeywordParams): Promise<Movie[]> {
+    return await db('movies')
+      .whereILike('title', `%${keyword}%`)
+      .orWhereILike('original_title', `%${keyword}%`)
+      .limit(limit)
+  }
+
+  async findAdvance({ filters }: GetByFiltersParam): Promise<Movie[] | []> {
     const query = db('movies')
 
     const conditions: Condition[] = []

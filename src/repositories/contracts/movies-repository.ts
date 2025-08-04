@@ -4,7 +4,8 @@ import type {
   SaveAllParam,
   SaveParam,
   GetByIdsParams,
-  GetByFiltersParams,
+  GetByFiltersParam,
+  GetByKeywordParams,
 } from '@/services/movies-service'
 import { Movie } from '@/@types'
 
@@ -26,7 +27,8 @@ export interface MoviesRepository {
     sortBy,
     sortOrder,
   }: GetByIdsParams): Promise<Movie[] | null>
-  findAdvance({ filters }: GetByFiltersParams): Promise<Movie[] | []>
+  findByKeyword({ keyword, limit }: GetByKeywordParams): Promise<Movie[]>
+  findAdvance({ filters }: GetByFiltersParam): Promise<Movie[] | []>
   save({ movie }: SaveParam): Promise<void>
   saveMany({ movies }: SaveAllParam): Promise<void>
 }
