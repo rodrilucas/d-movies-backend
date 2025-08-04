@@ -36,6 +36,29 @@ export type GetByIdsParams = {
   sortOrder?: SortOrder
 }
 
+export type SortOptions = {
+  by?: SortBy
+  order?: SortOrder
+}
+
+type MovieFilters = {
+  startYear?: string | null
+  endYear?: string | null
+  language?: string
+  rating?: number
+  avaliation?: number
+  includeAdult?: boolean
+  keyword?: string
+  genres?: number[]
+  sort?: SortOptions
+  page: number
+  limit: number
+}
+
+export type GetByFiltersParams = {
+  filters: MovieFilters
+}
+
 export class MoviesService {
   constructor(private readonly moviesRepository: MoviesRepository) {}
 
@@ -85,5 +108,13 @@ export class MoviesService {
     }))
 
     await this.moviesRepository.saveMany({ movies: sanitizedMovies })
+  }
+
+  async getByFilters({ filters }: GetByFiltersParams) {
+    const movies = await this.moviesRepository.findAdvance({ filters })
+    const totalMovies = movies && movies.length
+    const [{ count }] = await this.moviesRepository.countAll()
+    const totalPages = Math.ceil(count / filters.limit)
+    return { page: filters.page, totalPages, totalMovies, movies }
   }
 }
