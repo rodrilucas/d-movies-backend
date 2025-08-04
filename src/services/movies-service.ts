@@ -23,7 +23,7 @@ export class MoviseService {
   constructor(private readonly moviesRepository: MoviesRepository) {}
 
   getAll = async ({ page, limit, sortBy, sortOrder }: GetAllParams) => {
-    const movies = await this.moviesRepository.findAll({
+    const movies = await this.moviesRepository.findMany({
       page,
       limit,
       sortBy,

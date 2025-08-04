@@ -4,7 +4,7 @@ import { GetAllParams, GetByIdParam } from '@/services/movies-service'
 import { db } from '@/lib/knex'
 
 export class KnexMoviesRepository implements MoviesRepository {
-  async findAll({
+  async findMany({
     page,
     limit,
     sortBy,

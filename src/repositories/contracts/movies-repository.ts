@@ -6,7 +6,7 @@ export type Count = {
 }
 
 export interface MoviesRepository {
-  findAll({
+  findMany({
     page,
     limit,
     sortBy,
