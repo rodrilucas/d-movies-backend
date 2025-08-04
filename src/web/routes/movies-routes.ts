@@ -7,4 +7,5 @@ export function moviesRoutes(app: FastifyInstance) {
   app.post('/', moviesControler.getByFilters)
   app.get('/:id', moviesControler.getById)
   app.get('/search', moviesControler.search)
+  app.get('/suggestions', moviesControler.getByKeyword)
 }
