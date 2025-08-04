@@ -6,8 +6,18 @@ import {
   SaveAllParam,
   SaveParam,
   GetByIdsParams,
+  SortBy,
+  GetByFiltersParams,
 } from '@/services/movies-service'
 import { db } from '@/lib/knex'
+
+type Field = SortBy | 'original_language' | 'adult'
+
+type Operator = '=' | '>=' | '<='
+
+type Value = string | number | boolean
+
+type Condition = [Field, Operator, Value]
 
 export class KnexMoviesRepository implements MoviesRepository {
   async save({ movie }: SaveParam): Promise<void> {
@@ -53,6 +63,60 @@ export class KnexMoviesRepository implements MoviesRepository {
     if (sortBy && sortOrder) {
       query.orderBy(sortBy, sortOrder)
     }
+
+    return await query
+  }
+
+  async findAdvance({ filters }: GetByFiltersParams): Promise<Movie[] | []> {
+    const query = db('movies')
+
+    const conditions: Condition[] = []
+
+    if (filters.startYear) {
+      conditions.push(['release_date', '>=', filters.startYear])
+    }
+    if (filters.endYear) {
+      conditions.push(['release_date', '<=', filters.endYear])
+    }
+    if (filters.language) {
+      conditions.push(['original_language', '=', filters.language])
+    }
+    if (filters.rating) {
+      conditions.push(['vote_average', '>=', filters.rating])
+    }
+    if (filters.avaliation) {
+      conditions.push(['vote_count', '>=', filters.avaliation])
+    }
+    if (filters.includeAdult === false) {
+      conditions.push(['adult', '=', false])
+    }
+
+    for (const [field, op, value] of conditions) {
+      query.where(field, op, value)
+    }
+
+    if (filters.keyword) {
+      query.where((qb) => {
+        qb.where('title', 'ilike', `%${filters.keyword}%`).orWhere(
+          'original_title',
+          'ilike',
+          `%${filters.keyword}%`,
+        )
+      })
+    }
+
+    if (filters.genres && filters.genres.length) {
+      query.whereRaw(`genre_ids && ARRAY[${filters.genres.join(',')}]::int[]`)
+    }
+
+    if (filters.sort && filters.sort.by && filters.sort.order) {
+      query
+        .whereNotNull(filters.sort.by)
+        .orderBy(filters.sort.by, filters.sort.order)
+    }
+
+    const offset = (filters.page - 1) * filters.limit
+    query.limit(filters.limit).offset(offset)
 
     return await query
   }

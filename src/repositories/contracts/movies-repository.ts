@@ -4,6 +4,7 @@ import type {
   SaveAllParam,
   SaveParam,
   GetByIdsParams,
+  GetByFiltersParams,
 } from '@/services/movies-service'
 import { Movie } from '@/@types'
 
@@ -25,6 +26,7 @@ export interface MoviesRepository {
     sortBy,
     sortOrder,
   }: GetByIdsParams): Promise<Movie[] | null>
+  findAdvance({ filters }: GetByFiltersParams): Promise<Movie[] | []>
   save({ movie }: SaveParam): Promise<void>
   saveMany({ movies }: SaveAllParam): Promise<void>
 }
