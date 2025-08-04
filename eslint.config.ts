@@ -16,5 +16,8 @@ export default defineConfig([
   globalIgnores(['**/build', '**/node_modules']),
   {
     extends: compat.extends('@rocketseat/eslint-config/node'),
+    rules: {
+      'no-useless-constructor': 'off',
+    },
   },
 ])
