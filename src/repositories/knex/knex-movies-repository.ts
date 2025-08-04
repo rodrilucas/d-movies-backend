@@ -45,7 +45,7 @@ export class KnexMoviesRepository implements MoviesRepository {
     return await query
   }
 
-  async countAll(): Promise<Count[]> {
+  async countMany(): Promise<Count[]> {
     return await db('movies').count()
   }
 

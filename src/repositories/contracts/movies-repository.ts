@@ -20,7 +20,7 @@ export interface MoviesRepository {
     sortBy,
     sortOrder,
   }: GetAllParams): Promise<Movie[] | null>
-  countAll(): Promise<Count[]>
+  countMany(): Promise<Count[]>
   findById({ id }: GetByIdParam): Promise<Movie | null>
   findByIds({
     movieIds,
