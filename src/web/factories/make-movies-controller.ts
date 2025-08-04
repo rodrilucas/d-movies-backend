@@ -1,10 +1,13 @@
-import { MoviseService } from '@/services/movies-service'
-import { MoviseController } from '../controllers/movies-controller'
-import { KnexMoviesRepository } from '@/repositories/knex/knex-movies-repository'
+import { MoviesController } from '../controllers/movies-controller'
+import { makeMoviesService } from '@/services/factories/make-movies-service'
+import { makeMoviesPageService } from '@/services/factories/make-movies-page-service'
 
 export function makeMoviesController() {
-  const moviesRepository = new KnexMoviesRepository()
-  const moviesService = new MoviseService(moviesRepository)
-  const moviesController = new MoviseController(moviesService)
+  const moviesService = makeMoviesService()
+  const moviesPageService = makeMoviesPageService()
+  const moviesController = new MoviesController(
+    moviesService,
+    moviesPageService,
+  )
   return moviesController
 }
