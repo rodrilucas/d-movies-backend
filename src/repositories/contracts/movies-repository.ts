@@ -1,4 +1,10 @@
-import type { GetAllParams, GetByIdParam } from '@/services/movies-service'
+import type {
+  GetAllParams,
+  GetByIdParam,
+  SaveAllParam,
+  SaveParam,
+  GetByIdsParams,
+} from '@/services/movies-service'
 import { Movie } from '@/@types'
 
 export type Count = {
@@ -14,4 +20,11 @@ export interface MoviesRepository {
   }: GetAllParams): Promise<Movie[] | null>
   countAll(): Promise<Count[]>
   findById({ id }: GetByIdParam): Promise<Movie | null>
+  findByIds({
+    movieIds,
+    sortBy,
+    sortOrder,
+  }: GetByIdsParams): Promise<Movie[] | null>
+  save({ movie }: SaveParam): Promise<void>
+  saveMany({ movies }: SaveAllParam): Promise<void>
 }

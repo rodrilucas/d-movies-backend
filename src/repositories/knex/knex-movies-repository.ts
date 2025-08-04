@@ -1,9 +1,23 @@
 import { Movie } from '@/@types'
 import { Count, MoviesRepository } from '../contracts/movies-repository'
-import { GetAllParams, GetByIdParam } from '@/services/movies-service'
+import {
+  GetAllParams,
+  GetByIdParam,
+  SaveAllParam,
+  SaveParam,
+  GetByIdsParams,
+} from '@/services/movies-service'
 import { db } from '@/lib/knex'
 
 export class KnexMoviesRepository implements MoviesRepository {
+  async save({ movie }: SaveParam): Promise<void> {
+    await db('movies').insert(movie)
+  }
+
+  async saveMany({ movies }: SaveAllParam): Promise<void> {
+    await db('movies').insert(movies).onConflict('id').merge()
+  }
+
   async findMany({
     page,
     limit,
@@ -27,5 +41,19 @@ export class KnexMoviesRepository implements MoviesRepository {
   async findById({ id }: GetByIdParam): Promise<Movie | null> {
     const movie = await db('movies').where('id', id).first()
     return movie ?? null
+  }
+
+  async findByIds({
+    movieIds,
+    sortBy,
+    sortOrder,
+  }: GetByIdsParams): Promise<Movie[] | null> {
+    const query = db('movies').whereIn('id', movieIds)
+
+    if (sortBy && sortOrder) {
+      query.orderBy(sortBy, sortOrder)
+    }
+
+    return await query
   }
 }
