@@ -1,5 +1,18 @@
+import type { Movie } from '@/@types'
 import { env } from '@/env'
 import { ApiRequestError } from '@/web/errors/api-request-error'
+import { ResourceNotFoundError } from '@/web/errors/resource-not-found-error'
+import { makeMoviesService } from './factories/make-movies-service'
+import { SortBy, SortOrder } from './movies-service'
+import { makeMoviesPageService } from './factories/make-movies-page-service'
+
+type GetPageParams = {
+  query: string
+  page: number
+  limit: number
+  sortBy?: SortBy
+  sortOrder?: SortOrder
+}
 
 export class TmdbService {
   private readonly TMDB_API_BASE_URL: string
@@ -29,5 +42,44 @@ export class TmdbService {
       throw new ApiRequestError()
     }
     return data
+  }
+
+  async getPage({ query, limit, sortBy, sortOrder, page = 1 }: GetPageParams) {
+    const moviesService = makeMoviesService()
+
+    const moviesFromAPI = await this.fetchFromTMDB(
+      `/search/movie?query=${encodeURIComponent(
+        query,
+      )}&language=pt-BR&page=${page}&limit=${limit}&sort_by=${sortBy}.${sortOrder}`,
+    )
+
+    if (moviesFromAPI.results.length === 0) {
+      return new ResourceNotFoundError(
+        'Não foram encontrados filmes na API do TMDB',
+      )
+    }
+
+    await moviesService.saveAll({ movies: moviesFromAPI.results })
+
+    const movieIds = moviesFromAPI.results.map((movie: Movie) => movie.id)
+    const totalPages: number = moviesFromAPI.total_pages || 1
+    const totalResults: number = moviesFromAPI.total_results || 0
+
+    const moviesPageService = makeMoviesPageService()
+
+    await moviesPageService.save({
+      page,
+      query,
+      movieIds,
+      totalPages,
+      totalResults,
+    })
+
+    return {
+      totalPages,
+      totalResults,
+      limit,
+      movies: moviesFromAPI.results,
+    }
   }
 }
