@@ -20,7 +20,7 @@ export const getAllDto = z.object({
       },
       {
         message:
-          "Formato inválido para o sort_by. Valor esperado 'field.asc' ou 'field.desc'",
+          "Formato inválido para o sort. Valor esperado 'field.asc' ou 'field.desc'",
       },
     )
     .optional(),

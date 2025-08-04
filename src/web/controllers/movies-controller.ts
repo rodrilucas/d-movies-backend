@@ -6,6 +6,7 @@ import { getByIdDto } from '../dto/get-by-id-dto'
 import { searchDto } from '../dto/search-dto'
 import { MoviesPageService } from '@/services/movies-page-service'
 import { makeTmdbService } from '@/services/factories/make-tmdb-service'
+import { getByFiltersDto } from '../dto/get-by-filters-dto'
 
 export class MoviesController {
   constructor(
@@ -15,7 +16,6 @@ export class MoviesController {
 
   getAll = async (req: FastifyRequest, rep: FastifyReply) => {
     const { page, limit, sort } = getAllDto.parse(req.query)
-
     const { sortBy, sortOrder } = parseSortParam(sort)
 
     const movies = this.moviesService.getAll({
@@ -73,6 +73,26 @@ export class MoviesController {
     return rep.status(200).send({
       page,
       ...resultsFromApi,
+    })
+  }
+
+  getByFilters = async (req: FastifyRequest, reply: FastifyReply) => {
+    const filters = getByFiltersDto.parse(req.body)
+    const { sortBy, sortOrder } = parseSortParam(filters.sort)
+
+    const { movies, page, totalMovies, totalPages } =
+      await this.moviesService.getByFilters({
+        filters: {
+          ...filters,
+          sort: { by: sortBy, order: sortOrder },
+        },
+      })
+
+    reply.status(200).send({
+      page,
+      totalMovies,
+      totalPages,
+      movies,
     })
   }
 }
