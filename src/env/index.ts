@@ -13,6 +13,7 @@ const envSchema = z.object({
   PORT: z.number().default(3333),
   TMDB_URL: z.string(),
   TMDB_TOKEN: z.string(),
+  JWT_SECRET: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)
