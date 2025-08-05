@@ -4,4 +4,5 @@ import { FastifyInstance } from 'fastify'
 export function usersRoutes(app: FastifyInstance) {
   const usersController = makeUsersController()
   app.post('/', usersController.register)
+  app.post('/sessions', usersController.authenticate)
 }
