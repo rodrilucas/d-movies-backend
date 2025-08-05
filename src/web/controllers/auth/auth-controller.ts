@@ -1,7 +1,7 @@
 import { AuthService } from '@/services/auth-service'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { hash } from 'bcryptjs'
-import { registerDto } from '@/web/dto/register-dto'
+import { userCreateDto } from '@/web/dto/user-create-dto'
 import { authenticateDto } from '@/web/dto/authenticate-dto'
 import { AlreadyExistsError } from '@/web/errors/already-exists-error'
 import { InvalidCredentials } from '@/web/errors/invalid-credentials'
@@ -10,7 +10,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   register = async (req: FastifyRequest, rep: FastifyReply) => {
-    const { firstName, lastName, email, password } = registerDto.parse(req.body)
+    const { firstName, lastName, email, password } = userCreateDto.parse(
+      req.body,
+    )
 
     const hashedPassword = await hash(password, 6)
 

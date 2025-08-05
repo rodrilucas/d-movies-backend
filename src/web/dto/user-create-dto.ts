@@ -1,6 +1,6 @@
 import z from 'zod'
 
-export const registerDto = z.object({
+export const userCreateDto = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.email('Email inválido'),
