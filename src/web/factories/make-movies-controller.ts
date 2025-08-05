@@ -1,4 +1,4 @@
-import { MoviesController } from '../controllers/movies-controller'
+import { MoviesController } from '../controllers/movies/movies-controller'
 import { makeMoviesService } from '@/services/factories/make-movies-service'
 import { makeMoviesPageService } from '@/services/factories/make-movies-page-service'
 
