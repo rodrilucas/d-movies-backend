@@ -1,55 +1,21 @@
 import { UsersService } from '@/services/users-service'
-import { registerDto } from '@/web/dto/register-dto'
+import { UserResponseDto } from '@/web/dto/user-response-dto'
+import { ResourceNotFoundError } from '@/web/errors/resource-not-found-error'
+import { UserMapper } from '@/web/mappers/user-mapper'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { hash } from 'bcryptjs'
-import { AlreadyExistsError } from '@/web/errors/already-exists-error'
-import { authenticateDto } from '@/web/dto/authenticate-dto'
-import { InvalidCredentials } from '@/web/errors/invalid-credentials'
 
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  register = async (req: FastifyRequest, rep: FastifyReply) => {
-    const { firstName, lastName, email, password } = registerDto.parse(req.body)
-
-    const hashedPassword = await hash(password, 6)
-
+  getProfile = async (req: FastifyRequest, rep: FastifyReply) => {
     try {
-      await this.usersService.register({
-        user: {
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          password_hash: hashedPassword,
-        },
-      })
-
-      return rep.status(201).send()
+      const user = await this.usersService.getUserProfile({ id: req.user.sub })
+      const dto = UserMapper.toUserDto({ user })
+      const safeUserOutput = UserResponseDto.parse(dto)
+      rep.status(200).send(safeUserOutput)
     } catch (error) {
-      if (error instanceof AlreadyExistsError) {
-        return rep.status(409).send({ error: error.message })
-      }
-      throw error
-    }
-  }
-
-  authenticate = async (req: FastifyRequest, rep: FastifyReply) => {
-    const { email, password } = authenticateDto.parse(req.body)
-
-    try {
-      const user = await this.usersService.authenticate({ email, password })
-      const token = await rep.jwtSign(
-        {},
-        {
-          sign: {
-            sub: user.id.toString(),
-          },
-        },
-      )
-      return rep.status(200).send({ token })
-    } catch (error) {
-      if (error instanceof InvalidCredentials) {
-        rep.status(401).send({ error: error.message })
+      if (error instanceof ResourceNotFoundError) {
+        rep.status(404).send({ error: error.message })
       }
       throw error
     }
