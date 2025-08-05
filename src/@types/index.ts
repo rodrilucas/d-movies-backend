@@ -24,3 +24,11 @@ export type MoviesPage = {
   total_pages: number
   total_results: number
 }
+
+export type User = {
+  id: number
+  first_name: string
+  last_name: string
+  email: string
+  password_hash: string
+}
