@@ -1,9 +1,11 @@
 import fastify from 'fastify'
-import { moviesRoutes } from './web/routes/movies-routes'
+import { moviesRoutes } from './web/routes/movies/movies-routes'
 import { errorHandler } from './errors/error-handler'
+import { usersRoutes } from './web/routes/users/users-routes'
 
 export const app = fastify()
 
 app.register(moviesRoutes, { prefix: '/movies' })
+app.register(usersRoutes, { prefix: '/users' })
 
 app.setErrorHandler(errorHandler)
