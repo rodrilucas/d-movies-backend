@@ -3,6 +3,8 @@ import { registerDto } from '@/web/dto/register-dto'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { hash } from 'bcryptjs'
 import { AlreadyExistsError } from '@/web/errors/already-exists-error'
+import { authenticateDto } from '@/web/dto/authenticate-dto'
+import { InvalidCredentials } from '@/web/errors/invalid-credentials'
 
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -26,6 +28,28 @@ export class UsersController {
     } catch (error) {
       if (error instanceof AlreadyExistsError) {
         return rep.status(409).send({ error: error.message })
+      }
+      throw error
+    }
+  }
+
+  authenticate = async (req: FastifyRequest, rep: FastifyReply) => {
+    const { email, password } = authenticateDto.parse(req.body)
+
+    try {
+      const user = await this.usersService.authenticate({ email, password })
+      const token = await rep.jwtSign(
+        {},
+        {
+          sign: {
+            sub: user.id.toString(),
+          },
+        },
+      )
+      return rep.status(200).send({ token })
+    } catch (error) {
+      if (error instanceof InvalidCredentials) {
+        rep.status(401).send({ error: error.message })
       }
       throw error
     }
