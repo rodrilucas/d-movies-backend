@@ -76,6 +76,7 @@ export class KnexMoviesRepository implements MoviesRepository {
       .whereILike('title', `%${keyword}%`)
       .orWhereILike('original_title', `%${keyword}%`)
       .limit(limit)
+      .select('id', 'title')
   }
 
   async findAdvance({ filters }: GetByFiltersParam): Promise<Movie[] | []> {
