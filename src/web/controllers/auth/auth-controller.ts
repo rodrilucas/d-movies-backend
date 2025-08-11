@@ -29,7 +29,7 @@ export class AuthController {
       return rep.status(201).send()
     } catch (error) {
       if (error instanceof AlreadyExistsError) {
-        return rep.status(409).send({ error: error.message })
+        return rep.status(409).send({ errors: { email: error.message } })
       }
       throw error
     }
@@ -51,7 +51,7 @@ export class AuthController {
       return rep.status(200).send({ token })
     } catch (error) {
       if (error instanceof InvalidCredentials) {
-        rep.status(401).send({ error: error.message })
+        rep.status(401).send({ message: error.message })
       }
       throw error
     }
