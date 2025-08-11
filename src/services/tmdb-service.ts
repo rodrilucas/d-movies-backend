@@ -70,7 +70,7 @@ export class TmdbService {
       query,
       movieIds,
       totalPages: moviesFromAPI.total_pages,
-      totalResults: moviesFromAPI.totalResults,
+      totalResults: moviesFromAPI.total_results,
     })
 
     return moviesFromAPI
