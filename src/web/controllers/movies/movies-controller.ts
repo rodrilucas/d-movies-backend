@@ -30,10 +30,10 @@ export class MoviesController {
     const [{ count }] = await this.moviesService.countAll()
 
     return rep.status(200).send({
-      currentPage: page,
-      totalPages: Math.ceil(count / limit),
+      page,
       limit,
-      totalMovies: Number(count),
+      totalPages: Math.ceil(count / limit),
+      totalResults: Number(count),
       movies,
     })
   }
@@ -74,8 +74,8 @@ export class MoviesController {
         return rep.status(200).send({
           page,
           limit,
-          totalPages: pageData?.total_pages,
-          totalResults: pageData?.total_results,
+          totalPages: pageData.total_pages,
+          totalResults: pageData.total_results,
           movies,
         })
       }
@@ -107,6 +107,8 @@ export class MoviesController {
     const filters = getByFiltersDto.parse(req.body)
     const { sortBy, sortOrder } = parseSortParam(filters.sort)
 
+    console.log(filters)
+
     const [{ count }] = await this.moviesService.countAll()
 
     const movies = await this.moviesService.getByFilters({
@@ -120,7 +122,7 @@ export class MoviesController {
       page: filters.page,
       limit: filters.limit,
       totalPages: Math.ceil(count / filters.limit),
-      totalMovies: count,
+      totalResults: count,
       movies,
     })
   }
