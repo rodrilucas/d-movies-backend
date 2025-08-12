@@ -1,6 +1,7 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import { env } from '@/env'
 import z, { ZodError } from 'zod'
+import { parsePostgresError } from './parse-postgres-error'
 
 export function errorHandler(
   error: FastifyError,
@@ -15,10 +16,15 @@ export function errorHandler(
     })
   }
 
+  const pgErr = parsePostgresError(error)
+
+  if (pgErr) {
+    return rep.status(pgErr.status).send({ message: pgErr.message })
+  }
+
   if (env.NODE_ENV !== 'production') {
     console.error(error)
-  } else {
-    //
   }
+
   return rep.status(500).send({ message: 'Internal server error' })
 }
