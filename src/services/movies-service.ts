@@ -15,6 +15,7 @@ export type SortBy =
   | 'vote_average'
   | 'vote_count'
   | 'popularity'
+  | 'title'
 
 export type SortOrder = 'asc' | 'desc'
 

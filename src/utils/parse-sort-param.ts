@@ -12,6 +12,7 @@ export function parseSortParam(sort?: string): SortOptions {
     'release_date',
     'vote_average',
     'vote_count',
+    'title',
   ])
   const validOrder = new Set<SortOrder>(['asc', 'desc'])
   return {
